@@ -14,7 +14,6 @@ const getAllProducts = async (req, res) => {
 // @access  Public
 const getProductById = async (req, res) => {
     try {
-
         const productId = req.params.id;
         const productData = await ProductModel.findOne({ _id: productId });
         if (productData) {
@@ -32,11 +31,42 @@ const getProductById = async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = async (req, res) => {
-    const { productId, title, description, realPrice, discountedPrice } = req.body;
-    const newProduct = new ProductModel({ productId, title, description, realPrice, discountedPrice });
-    const product = await newProduct.save();
-    res.json(product);
-}
+    const {
+        productId,
+        title,
+        description,
+        realPrice,
+        discountedPrice,
+        thumbnailImage,
+        quantity,
+        isAvailable,
+        sizes,
+    } = req.body;
+
+    try {
+        const newProduct = new ProductModel({
+            productId,
+            title,
+            description,
+            realPrice,
+            discountedPrice,
+            thumbnailImage,
+            quantity,
+            isAvailable,
+            sizes,
+        });
+        const product = await newProduct.save();
+        return res.status(201).json(
+            BaseResponse.success('Product created successfully', product)
+        );
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).json(
+            BaseResponse.error('Something went wrong while creating the product', err)
+        );
+    }
+};
+
 
 // @desc    Update a product
 // @route   PATCH /api/products/:id
@@ -47,12 +77,12 @@ const updateProduct = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { productId, title, description, realPrice, discountedPrice } = req.body;
+        const { productId, title, description, realPrice, discountedPrice, thumbnailImage, sizes, isAvailable } = req.body;
         const id = req.params.id;
         const updatedProductData = await ProductModel.findOneAndUpdate({ _id: id },
             {
                 $set: {
-                    productId, title, description, realPrice, discountedPrice
+                    productId, title, description, realPrice, discountedPrice, thumbnailImage, sizes, isAvailable
                 },
             }, {
             new: true,
