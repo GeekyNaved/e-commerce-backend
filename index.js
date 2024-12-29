@@ -2,7 +2,8 @@ import express, { Router, json } from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import ProductRoutes from './routes/productRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app = express();
@@ -17,7 +18,8 @@ app.use(json());
 // });
 
 // Routes
-app.use('/api/products', ProductRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
